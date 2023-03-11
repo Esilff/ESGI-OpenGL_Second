@@ -6,26 +6,29 @@
 
 namespace project {
     enum ShaderType {
+        NONE = -1,
         VERTEX,
         FRAGMENT
     };
 }
 
 namespace fparse {
-    std::array<std::string, 2> parseShader(const std::string &shaderName) {
+    std::array<std::string, 2> parseShader(const std::string &path) {
         std::array<std::string, 2> shaderSources;
-        std::ifstream vertexSource(std::string(SOURCE_DIR) + "/" + shaderName + ".vert");
-        if (!vertexSource.is_open()) {
-            std::cout << "No vertex shader found for : " << shaderName << std::endl;
+        std::ifstream file(std::string(SOURCE_DIR) + "/" + path);
+        project::ShaderType type = project::NONE;
+        if (!file.is_open()) {
+            std::cout << "No file found at : " << path << std::endl;
         }
-        std::ifstream fragmentSource(std::string(SOURCE_DIR) + "/" + shaderName + ".frag");
-        if (!fragmentSource.is_open()) {
-            std::cout << "No fragment shader found for : " << shaderName << std::endl;
+        std::string line;
+        while (std::getline(file, line)) {
+            if (line.find("#pragma") != std::string::npos) {
+                if (line.find("vertex") != std::string::npos) type = project::VERTEX;
+                if (line.find("fragment") != std::string::npos) type = project::FRAGMENT;
+                continue;
+            }
+            shaderSources[type].append(line + "\n");
         }
-        std::string vertContent((std::istreambuf_iterator<char>(vertexSource)), std::istreambuf_iterator<char>());
-        std::string fragContent((std::istreambuf_iterator<char>(fragmentSource)), std::istreambuf_iterator<char>());
-        shaderSources[project::VERTEX] = vertContent;
-        shaderSources[project::FRAGMENT] = fragContent;
         return shaderSources;
     }
 }

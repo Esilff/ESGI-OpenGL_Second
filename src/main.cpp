@@ -31,9 +31,10 @@ int main() {
         throw std::runtime_error("Failed to initialize GLAD");
     }
     //Loading vertices
-    std::array<std::string, 2> shaderSource = fparse::parseShader("src/shaders/basic");
+    std::array<std::string, 2> shaderSource = fparse::parseShader("src/shaders/basic.glsl");
     const char* vs = shaderSource[0].c_str();
     const char* fs = shaderSource[1].c_str();
+    std::cout << vs << "\n" << fs << std::endl;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
