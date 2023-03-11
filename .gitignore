@@ -1,0 +1,7 @@
+#Jetbrains config file
+
+.idea
+
+#CMake build folder
+
+cmake-build-debug
