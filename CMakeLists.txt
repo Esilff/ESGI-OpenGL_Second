@@ -3,7 +3,7 @@ project(ESGI_OpenGL_Second)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/core/Shader.h src/core/Shader.cpp src/core/Mesh.h src/core/Mesh.cpp)
 
 add_subdirectory(dependencies/glfw)
 

@@ -3,17 +3,16 @@
 #include <stdexcept>
 #include <array>
 #include <iostream>
-#include "util/FileParser.cpp"
+#include "core/Shader.h"
+#include "core/Mesh.h"
 
 float vertices[] = {
-        -0.5f, -0.5f, 0.0f,0.8,0.2,0.25,
-        0.5f,-0.5f,0.0f,0.2,0.4,0.4,
-        0.0f,0.5f,0.0f,0.5,0.4,0.8
+        -0.5f, -0.5f, 0.0f,
+        0.5f,-0.5f,0.0f,
+        0.0f,0.5f,0.0f
 };
 
 
-
-unsigned int vbo;
 
 
 int main() {
@@ -31,62 +30,17 @@ int main() {
         throw std::runtime_error("Failed to initialize GLAD");
     }
     //Loading vertices
-    std::array<std::string, 2> shaderSource = fparse::parseShader("src/shaders/basic.glsl");
-    const char* vs = shaderSource[0].c_str();
-    const char* fs = shaderSource[1].c_str();
-    std::cout << vs << "\n" << fs << std::endl;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    //compiling vertex shader
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vs, nullptr);
-    glCompileShader(vertexShader);
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-        std::cout << "Could not compile the vertexShader :\n" << infoLog << std::endl;
-    }
-    //compiling fragmentShader
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fs, nullptr);
-    glCompileShader(fragmentShader);
-    int fragSuccess;
-    char fragInfoLog[512];
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &fragSuccess);
-    if (!fragSuccess) {
-        glGetShaderInfoLog(fragmentShader, 512, nullptr, fragInfoLog);
-        std::cout << "Could not compile the fragmentShader :\n" << fragInfoLog << std::endl;
-    }
-    //create shader program
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    shader::Shader shader = shader::Shader("src/shaders/basic.glsl");
+    Mesh mesh = Mesh(vertices, 3, shader.getPosLocation());
 
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if(!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << infoLog << std::endl;
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-    glVertexAttribPointer(glGetAttribLocation(shaderProgram, "aPos"), 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) 0);
-    glVertexAttribPointer(glGetAttribLocation(shaderProgram, "aCol"), 3,GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
-    glEnableVertexAttribArray(glGetAttribLocation(shaderProgram, "aPos"));
-    glEnableVertexAttribArray(glGetAttribLocation(shaderProgram, "aCol"));
 
     while(!glfwWindowShouldClose(window)) {
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
         glClearColor(0.1,0.1,0.1,1.0);
         glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(shaderProgram);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        shader.bind();
+        mesh.draw(GL_TRIANGLES);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
