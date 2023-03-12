@@ -75,6 +75,6 @@ std::array<std::string, 2> shader::Shader::parseShader(const std::string &path) 
     return shaderSources;
 }
 
-unsigned int shader::Shader::getPosLocation() {
-    return glGetAttribLocation(m_shaderProgram, "aPos");
+unsigned int shader::Shader::getProgram() {
+    return m_shaderProgram;
 }

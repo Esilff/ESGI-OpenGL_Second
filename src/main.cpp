@@ -29,9 +29,7 @@ int main() {
     if (!gladLoadGL()) {
         throw std::runtime_error("Failed to initialize GLAD");
     }
-    //Loading vertices
-    shader::Shader shader = shader::Shader("src/shaders/basic.glsl");
-    Mesh mesh = Mesh(vertices, 3, shader.getPosLocation());
+    Mesh mesh = Mesh(vertices, 3, shader::Shader("src/shaders/basic.glsl"));
 
 
     while(!glfwWindowShouldClose(window)) {

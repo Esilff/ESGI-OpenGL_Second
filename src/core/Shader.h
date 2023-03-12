@@ -31,8 +31,7 @@ namespace shader {
         void unbind();
         std::string getSource(ShaderType type);
         std::array<std::string, 2> parseShader(const std::string &path);
-        unsigned int getPosLocation();
-
+        unsigned int getProgram();
     };
 }
 
